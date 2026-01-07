@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .infrastructure.config.settings import settings
-from .interfaces.api.v1.routes import user
+from .interfaces.api.v1.routes import shipment
 
 app = FastAPI(
     title="shipment_api",
@@ -20,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(user.router, prefix="/api/v1")
+app.include_router(shipment.router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
