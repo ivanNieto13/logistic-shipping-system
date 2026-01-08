@@ -1,12 +1,12 @@
 """shipment_api - FastAPI Application"""
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .interfaces.api.dependencies import get_redis_adapter
 
 from .infrastructure.config.settings import settings
-from .interfaces.api.v1.routes import shipment
+from .interfaces.api.v1.routes import shipment, shipment_event
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,7 +31,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(shipment.router, prefix="/api/v1")
+v1_router = APIRouter(prefix="/v1")
+v1_router.include_router(shipment.router)
+v1_router.include_router(shipment_event.router)
+
+api_router = APIRouter(prefix="/api")
+api_router.include_router(v1_router)
+
+app.include_router(api_router)
 
 @app.get("/")
 async def root():
