@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ...domain.entities.new_shipment_event import MessagePayload
+from ..entities.message_payload import MessagePayload
 
 class MessagePublisher(ABC):
     @abstractmethod

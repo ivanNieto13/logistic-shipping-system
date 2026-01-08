@@ -1,6 +1,6 @@
 
 
-from ...domain.entities.new_shipment_event import MessagePayload
+from ...domain.entities.message_payload import MessagePayload
 from ...domain.interfaces.publisher import MessagePublisher
 
 

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .interfaces.api.dependencies import get_redis_adapter
 
 from .infrastructure.config.settings import settings
-from .interfaces.api.v1.routes import shipment
+from .interfaces.api.v1.routes import shipment, shipment_event
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,6 +33,7 @@ app.add_middleware(
 
 v1_router = APIRouter(prefix="/v1")
 v1_router.include_router(shipment.router)
+v1_router.include_router(shipment_event.router)
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(v1_router)

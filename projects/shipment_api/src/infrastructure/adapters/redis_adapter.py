@@ -1,7 +1,7 @@
 import json
 import redis.asyncio as redis
 from ...domain.interfaces.publisher import MessagePublisher
-from ...domain.entities.new_shipment_event import MessagePayload
+from ...domain.entities.message_payload import MessagePayload
 
 class RedisPublisherAdapter(MessagePublisher):
     def __init__(self, redis_url: str):
