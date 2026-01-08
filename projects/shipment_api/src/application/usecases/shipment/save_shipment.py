@@ -1,5 +1,5 @@
 from typing import List
-from uuid import UUID
+
 
 from ....domain.repositories.shipment_repository import ShipmentRepository
 from ....domain.entities.shipment import Shipment

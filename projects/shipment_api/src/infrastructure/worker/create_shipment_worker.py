@@ -1,8 +1,10 @@
 import os
+import asyncio
 import json
 import threading
 import redis
 from celery import Celery, bootsteps
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from ...application.usecases.shipment.save_shipment import SaveShipmentUseCase
 from ...infrastructure.database.repositories.shipment_repository import ShipmentRepository
@@ -11,6 +13,7 @@ from ...infrastructure.config.settings import settings
 
 REDIS_URL = os.getenv("REDIS_URL", settings.REDIS_URL)
 CHANNEL_NAME = os.getenv("CREATE_SHIPMENT_CHANNEL", settings.CREATE_SHIPMENT_CHANNEL)
+MONGO_URI = os.getenv("DATABASE_URL", "mongodb://root:example@db:27017")
 
 app = Celery(
     "shipment_worker",
@@ -25,6 +28,10 @@ app.conf.update(
     timezone="UTC",
     enable_utc=True,
 )
+
+client = AsyncIOMotorClient(MONGO_URI, uuidRepresentation="standard")
+db = client[os.getenv("DATABASE_NAME", "app_db")]
+mongo_repo = ShipmentRepository(db)
 
 class CreateShipmentSubscriber(bootsteps.StartStopStep):
     requires = {"celery.worker.components:Timer"}
@@ -72,8 +79,8 @@ class CreateShipmentSubscriber(bootsteps.StartStopStep):
         try:
             payload = json.loads(data)
             print(f"Income event payload: {payload}")
-            use_case = SaveShipmentUseCase(repository=ShipmentRepository())
-            result = use_case.execute(SaveShipment(**payload))
+            use_case = SaveShipmentUseCase(repository=mongo_repo)
+            result = asyncio.run(use_case.execute(SaveShipment(**payload)))
             print(f"Event processed, result: {result}")
             
         except json.JSONDecodeError:
