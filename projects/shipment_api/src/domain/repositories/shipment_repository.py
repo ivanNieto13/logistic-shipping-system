@@ -3,7 +3,7 @@ from typing import List
 
 from ..entities.shipment import Shipment
 
-class IShipmentRepository(ABC):   
+class ShipmentRepository(ABC):   
     @abstractmethod
     async def create_many(self, entity: List[Shipment]) -> List[Shipment]:
         pass

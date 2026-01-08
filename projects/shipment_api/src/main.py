@@ -1,9 +1,20 @@
 """shipment_api - FastAPI Application"""
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .interfaces.api.dependencies import get_redis_adapter
+
 from .infrastructure.config.settings import settings
 from .interfaces.api.v1.routes import shipment
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Verificar conexión si es necesario
+    yield
+    # Shutdown: Cerrar conexión a Redis limpiamente
+    adapter = get_redis_adapter()
+    await adapter.close()
 
 app = FastAPI(
     title="shipment_api",

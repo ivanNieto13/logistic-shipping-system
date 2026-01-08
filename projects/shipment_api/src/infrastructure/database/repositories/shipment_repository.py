@@ -2,9 +2,9 @@ from typing import List
 
 from ....domain.entities.shipment import Shipment
 from ....infrastructure.database.models.shipment import ShipmentModel
-from ....domain.repositories.shipment_repository import IShipmentRepository
+from ....domain.repositories.shipment_repository import ShipmentRepository
 
-class ShipmentRepository(IShipmentRepository):
+class ShipmentRepository(ShipmentRepository):
     def __init__(self, ):
         pass
     

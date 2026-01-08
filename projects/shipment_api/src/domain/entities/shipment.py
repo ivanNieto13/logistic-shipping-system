@@ -13,3 +13,6 @@ class Shipment:
     
     def __repr__(self):
         return f"<Shipment {self.id} {self.origin_date} {self.total_amount}>"
+    
+    def to_dict(self):
+        return {"id": self.id, "origin_date": self.origin_date, "total_amount": self.total_amount}
