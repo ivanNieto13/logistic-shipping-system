@@ -12,3 +12,8 @@ class CreateShipment(BaseModel):
 class CreateShipmentResponse(BaseModel):
     acknowledge: bool = Field()
     
+    
+class SaveShipment(BaseModel):
+    id: UUID
+    origin_date: datetime.datetime
+    total_amount: float

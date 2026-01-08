@@ -1,4 +1,3 @@
-from typing import List
 
 from ....domain.entities.shipment import Shipment
 from ....infrastructure.database.models.shipment import ShipmentModel
@@ -11,23 +10,17 @@ class ShipmentRepository(ShipmentRepository):
     def _to_entity(self, model: ShipmentModel) -> Shipment:
         return Shipment(
             id=model.id,
-            name=model.name,
-            price=model.price,
-            stock=model.stock,
-            is_active=model.is_active,
-            description=model.description,
-            created_at=model.created_at
+            origin_date=model.origin_date,
+            total_amount=model.total_amount,
         )
     
-    async def create(self, entities: List[Shipment]) -> Shipment:
-        models: List[ShipmentModel] = []
-        for entity in entities:
-            models.append(ShipmentModel(
+    def save(self, entity: Shipment) -> Shipment:
+        model = ShipmentModel(
             id=entity.id,
             origin_date=entity.origin_date,
             total_amount=entity.total_amount,
-        ))
-        
-        return self._to_entity(models)
+        )
+    
+        return self._to_entity(model)
     
     

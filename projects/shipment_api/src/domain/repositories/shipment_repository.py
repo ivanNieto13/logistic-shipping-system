@@ -5,5 +5,5 @@ from ..entities.shipment import Shipment
 
 class ShipmentRepository(ABC):   
     @abstractmethod
-    async def create_many(self, entity: List[Shipment]) -> List[Shipment]:
+    def save(self, entity: Shipment) -> Shipment:
         pass
