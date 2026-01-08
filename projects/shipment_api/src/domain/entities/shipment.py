@@ -1,10 +1,13 @@
+from dataclasses import dataclass
+import datetime
 from uuid import UUID
 
+@dataclass
 class Shipment:
     def __init__(
         self,
-        id: UUID | str,
-        origin_date: float,
+        id: UUID,
+        origin_date: datetime.datetime,
         total_amount: float,
     ):
         self.id = id

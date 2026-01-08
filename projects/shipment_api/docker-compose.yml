@@ -12,10 +12,19 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+  
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
 
-  worker:
+  create_shipment_worker:
     build: .
-    command: celery -A src.worker worker -l info
+    command: celery -A src.infrastructure.worker.create_shipment_worker worker --loglevel=info
     volumes:
       - ./src:/app/src
     env_file:

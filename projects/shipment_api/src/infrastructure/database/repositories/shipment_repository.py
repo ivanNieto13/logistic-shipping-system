@@ -1,33 +1,34 @@
-from typing import List
 
+import os
+from motor.core import AgnosticDatabase
 from ....domain.entities.shipment import Shipment
 from ....infrastructure.database.models.shipment import ShipmentModel
 from ....domain.repositories.shipment_repository import ShipmentRepository
 
 class ShipmentRepository(ShipmentRepository):
-    def __init__(self, ):
-        pass
+    def __init__(self, db: AgnosticDatabase):
+        self._db = db[os.getenv("SHIPMENTS_COLLECTION_NAME", "shipments_db")]
     
     def _to_entity(self, model: ShipmentModel) -> Shipment:
         return Shipment(
             id=model.id,
-            name=model.name,
-            price=model.price,
-            stock=model.stock,
-            is_active=model.is_active,
-            description=model.description,
-            created_at=model.created_at
+            origin_date=model.origin_date,
+            total_amount=model.total_amount,
         )
     
-    async def create(self, entities: List[Shipment]) -> Shipment:
-        models: List[ShipmentModel] = []
-        for entity in entities:
-            models.append(ShipmentModel(
+    async def save(self, entity: Shipment) -> Shipment:
+        model = ShipmentModel(
             id=entity.id,
             origin_date=entity.origin_date,
             total_amount=entity.total_amount,
-        ))
+        )
         
-        return self._to_entity(models)
+        await self._db.update_one(
+            {"id": entity.id}, 
+            {"$set": model.model_dump()}, 
+            upsert=True
+        )
+        
+        return entity
     
     

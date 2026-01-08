@@ -7,7 +7,7 @@ from .....application.usecases.shipment.create_many_shipment import CreateManySh
 from ....schemas.shipment import CreateShipment, CreateShipmentResponse
 from ...dependencies import get_notification_service
 
-router = APIRouter(prefix="/shipments", tags=["Shipments"])
+router = APIRouter(prefix="/shipments", tags=["Publishers"])
 
 @router.post("/", status_code=200, response_model=CreateShipmentResponse)
 async def create_many_shipments(
