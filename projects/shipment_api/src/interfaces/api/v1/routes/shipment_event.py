@@ -7,7 +7,7 @@ from .....application.usecases.shipment_event.create_many_shipment_event import 
 from ....schemas.shipment_event import CreateShipmentEvent, CreateShipmentEventResponse
 from ...dependencies import get_notification_service
 
-router = APIRouter(prefix="/shipments-events", tags=["Shipment events"])
+router = APIRouter(prefix="/shipments-events", tags=["Publishers"])
 
 @router.post("/", status_code=200, response_model=CreateShipmentEventResponse)
 async def create_many_shipments_events(
