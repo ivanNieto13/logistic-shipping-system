@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     API_VERSION: str = "v1"
     DATABASE_URL: str = "mongodb://user:password@localhost:27017/app_db"
+    REDIS_URL: str = "redis://localhost:6379"
+    CREATE_SHIPMENT_CHANNEL: str = "shipment"
     
     class Config:
         env_file = ".env"

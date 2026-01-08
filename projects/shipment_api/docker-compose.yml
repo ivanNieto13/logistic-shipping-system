@@ -13,9 +13,9 @@ services:
     ports:
       - "6379:6379"
 
-  worker:
+  create_shipment_worker:
     build: .
-    command: celery -A src.worker worker -l info
+    command: celery -A src.infrastructure.worker.create_shipment_worker worker --loglevel=info
     volumes:
       - ./src:/app/src
     env_file:
