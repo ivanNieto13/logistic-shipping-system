@@ -31,9 +31,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
 
-  create_shipment_worker:
+  integration_consumer:
     build: ./workers
-    command: celery -A src.infrastructure.worker.create_shipment_worker worker --loglevel=info
+    command: celery -A src.infrastructure.worker.integration_consumer worker --loglevel=info
     volumes:
       - ./workers/src:/app/src
     env_file:
