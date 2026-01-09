@@ -38,3 +38,12 @@ services:
       - ./workers/src:/app/src
     env_file:
       - .env
+  
+  integrated_event_consumer:
+    build: ./workers
+    command: celery -A src.infrastructure.worker.integrated_event_consumer worker --loglevel=info
+    volumes:
+      - ./workers/src:/app/src
+    env_file:
+      - .env
+

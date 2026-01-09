@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     SHIPMENTS_COLLECTION_NAME: str = "shipments"
     REDIS_URL: str = "redis://localhost:6379"
     CREATE_SHIPMENT_CHANNEL: str = "shipment"
+    EVENT_CONSUMER_CHANNEL: str = "event_consumer"
     
     class Config:
         env_file = ".env"

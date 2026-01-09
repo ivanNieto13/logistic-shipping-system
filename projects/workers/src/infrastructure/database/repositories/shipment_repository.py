@@ -1,13 +1,14 @@
 
 import os
 from motor.core import AgnosticDatabase
+
 from ....domain.entities.shipment import Shipment
 from ....infrastructure.database.models.shipment import ShipmentModel
 from ....domain.repositories.shipment_repository import ShipmentRepository
 
 class ShipmentRepository(ShipmentRepository):
     def __init__(self, db: AgnosticDatabase):
-        self._db = db[os.getenv("SHIPMENTS_COLLECTION_NAME", "shipments_db")]
+        self._db = db[os.getenv("SHIPMENTS_COLLECTION_NAME", "shipments")]
     
     def _to_entity(self, model: ShipmentModel) -> Shipment:
         return Shipment(
@@ -30,5 +31,14 @@ class ShipmentRepository(ShipmentRepository):
         )
         
         return entity
+    
+    async def find(self, model: ShipmentModel) -> Shipment | None:
+        document = await self._db.find_one(
+            {"id": model.id},
+        )
+        
+        if document:
+            return self._to_entity(ShipmentModel(**document))
+        return None
     
     

@@ -6,3 +6,7 @@ class ShipmentRepository(ABC):
     @abstractmethod
     def save(self, entity: Shipment) -> Shipment:
         pass
+    
+    @abstractmethod
+    def find(self, entity: Shipment) -> Shipment:
+        pass
