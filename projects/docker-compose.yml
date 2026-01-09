@@ -46,4 +46,12 @@ services:
       - ./workers/src:/app/src
     env_file:
       - .env
+  
+  data_analysis_consumer:
+    build: ./workers
+    command: celery -A src.infrastructure.worker.data_analysis_consumer worker --loglevel=info
+    volumes:
+      - ./workers/src:/app/src
+    env_file:
+      - .env
 
