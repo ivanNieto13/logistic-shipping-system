@@ -7,16 +7,16 @@ from celery import Celery, bootsteps
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from ...application.usecases.shipment.save_shipment import SaveShipmentUseCase
-from ...infrastructure.database.repositories.shipment_repository import ShipmentRepository
+from ..database.repositories.shipment_repository import ShipmentRepository
 from ...interfaces.schemas.shipment import SaveShipment
-from ...infrastructure.config.settings import settings
+from ..config.settings import settings
 
 REDIS_URL = os.getenv("REDIS_URL", settings.REDIS_URL)
 CHANNEL_NAME = os.getenv("CREATE_SHIPMENT_CHANNEL", settings.CREATE_SHIPMENT_CHANNEL)
 MONGO_URI = os.getenv("DATABASE_URL", "mongodb://root:example@db:27017")
 
 app = Celery(
-    "shipment_worker",
+    "integration_consumer",
     broker=REDIS_URL,
     backend=REDIS_URL
 )
@@ -29,7 +29,7 @@ app.conf.update(
     enable_utc=True,
 )
 
-class CreateShipmentSubscriber(bootsteps.StartStopStep):
+class IntegrationConsumer(bootsteps.StartStopStep):
     requires = {"celery.worker.components:Timer"}
 
     def __init__(self, worker, **kwargs) -> None:
@@ -39,7 +39,7 @@ class CreateShipmentSubscriber(bootsteps.StartStopStep):
         self._thread = None
         self._stopped = threading.Event()
 
-    def start(self) -> None:
+    def start(self, worker) -> None:
         print(f"Start listening {CHANNEL_NAME} channel events.")
         self._redis_client = redis.from_url(REDIS_URL, decode_responses=True)
         self._pubsub = self._redis_client.pubsub()
@@ -48,7 +48,7 @@ class CreateShipmentSubscriber(bootsteps.StartStopStep):
         self._thread = threading.Thread(target=self._run_loop, daemon=True)
         self._thread.start()
 
-    def stop(self) -> None:
+    def stop(self, worker) -> None:
         print(f"Stop listening {CHANNEL_NAME} channel events.")
         self._stopped.set()
         if self._pubsub:
@@ -92,4 +92,4 @@ class CreateShipmentSubscriber(bootsteps.StartStopStep):
         except json.JSONDecodeError:
             print(f"Invalid JSON: {data}")
 
-app.steps["worker"].add(CreateShipmentSubscriber)
+app.steps["worker"].add(IntegrationConsumer)

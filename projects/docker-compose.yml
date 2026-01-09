@@ -1,0 +1,40 @@
+services:
+  shipment_api:
+    build: ./shipment_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./shipment_api/src:/app/src
+    env_file:
+      - .env
+
+  shipment_event_api:
+    build: ./shipment_event_api
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./shipment_event_api/src:/app/src
+    env_file:
+      - .env
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  integration_consumer:
+    build: ./workers
+    command: celery -A src.infrastructure.worker.integration_consumer worker --loglevel=info
+    volumes:
+      - ./workers/src:/app/src
+    env_file:
+      - .env
