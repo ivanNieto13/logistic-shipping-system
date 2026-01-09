@@ -16,7 +16,7 @@ class IntegratedEventUseCase:
         self._shipment_repository = shipment_repository
         self._shipment_event_repository = shipment_event_repository
         
-    def _map_event(event: ShipmentEventType) -> int:
+    def _map_event(self, event: ShipmentEventType) -> int:
         match event:
             case ShipmentEventType.INTEGRATED:
                 return 1
@@ -43,7 +43,7 @@ class IntegratedEventUseCase:
         
         found_existent_shipment_event: ShipmentEvent | None = await self._shipment_event_repository.find(
             ShipmentEvent(
-                shipment_id=shipment_event.shipment_id
+                shipment_id=shipment_event.shipment_id,
             )
         )
         
@@ -61,8 +61,11 @@ class IntegratedEventUseCase:
         ponderated_existent_event = self._map_event(found_existent_shipment_event.event)
         ponderated_current_event = self._map_event(shipment_event.event)
         
-        if ponderated_existent_event < ponderated_current_event:
-            print("update existent event")
+        allowed_update = ponderated_existent_event < ponderated_current_event
+        print(f"allowed_update: {allowed_update}")
+        
+        if allowed_update:
+            print(f"update existent event from {found_existent_shipment_event.event} to {shipment_event.event}")
             return await self._shipment_event_repository.save(
                 ShipmentEvent(
                     shipment_id=shipment_event.shipment_id,

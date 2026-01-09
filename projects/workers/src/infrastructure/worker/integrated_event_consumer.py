@@ -14,7 +14,7 @@ from ...infrastructure.database.repositories.shipment_event_repository import Sh
 from ...infrastructure.config.settings import settings
 
 REDIS_URL = os.getenv("REDIS_URL", settings.REDIS_URL)
-CHANNEL_NAME = os.getenv("SHIPMENT_INTEGRATED_EVENT_CHANNEL", "shipment_integrated_event")
+CHANNEL_NAME = os.getenv("SHIPMENT_EVENT_CHANNEL", "shipment_event")
 MONGO_URI = os.getenv("DATABASE_URL", "mongodb://root:example@db:27017")
 
 app = Celery(

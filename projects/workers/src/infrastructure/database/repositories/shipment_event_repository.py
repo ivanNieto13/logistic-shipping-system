@@ -34,6 +34,7 @@ class ShipmentEventRepository(ShipmentEventRepository):
     async def find(self, entity: ShipmentEvent) -> ShipmentEvent | None:
         document = await self._db.find_one(
             {"shipment_id": entity.shipment_id},
+            sort=[('_id', -1)]
         )
         
         if document:
