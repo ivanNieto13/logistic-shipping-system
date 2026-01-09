@@ -43,9 +43,9 @@ Es requisito tener instalado Docker.
    docker-compose up
    ```
 
-2. La API de `shipment` estará disponible en `http://localhost:8080`.
+2. La API de `shipment` estará disponible en `http://localhost:8000`.
 
-3. La API de `shipment-event` estará disponible en `http://localhost:8081`.
+3. La API de `shipment-event` estará disponible en `http://localhost:8001`.
 
 ## Documentación Swagger
 
