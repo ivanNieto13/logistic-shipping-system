@@ -10,7 +10,7 @@ from ....domain.repositories.shipment_event_repository import ShipmentEventRepos
 
 class ShipmentEventRepository(ShipmentEventRepository):
     def __init__(self, db: AgnosticDatabase):
-        self._db = db[os.getenv("SHIPMENTS_COLLECTION_NAME", "shipment_events")]
+        self._db = db[os.getenv("SHIPMENTS_EVENTS_COLLECTION_NAME", "shipment_events")]
     
     def _to_entity(self, model: ShipmentEventModel) -> ShipmentEvent:
         return ShipmentEvent(
