@@ -7,8 +7,8 @@ class Shipment:
     def __init__(
         self,
         id: UUID,
-        origin_date: datetime.datetime,
-        total_amount: float,
+        origin_date: datetime.datetime | None = None,
+        total_amount: float | None = None,
     ):
         self.id = id
         self.origin_date = origin_date

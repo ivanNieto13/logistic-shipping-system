@@ -3,6 +3,6 @@ from uuid import UUID
 from pydantic import BaseModel
         
 class ShipmentModel(BaseModel):
-    id: UUID
-    origin_date: datetime.datetime
-    total_amount: float
+    id: UUID | None
+    origin_date: datetime.datetime | None
+    total_amount: float | None
