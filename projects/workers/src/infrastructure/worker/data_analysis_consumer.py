@@ -6,18 +6,17 @@ import redis
 from celery import Celery, bootsteps
 from motor.motor_asyncio import AsyncIOMotorClient
 
-
 from ...interfaces.schemas.shipment_event import CreateShipmentEvent
-from ...application.usecases.shipment_event.integrated_event import IntegratedEventUseCase
-from ...infrastructure.database.repositories.shipment_event_repository import ShipmentEventRepository
+from ...infrastructure.database.repositories.data_analysis_repositry import DataAnalysisRepository
+from ...application.usecases.data_analysis.increment_shipment import IncrementShipmentUseCase
 from ...infrastructure.config.settings import settings
 
 REDIS_URL = os.getenv("REDIS_URL", settings.REDIS_URL)
-CHANNEL_NAME = os.getenv("SHIPMENT_EVENT_CHANNEL", "shipment_event")
+CHANNEL_NAME = os.getenv("SHIPMENT_FINAL_EVENT_CHANNEL", "shipment_final_event")
 MONGO_URI = os.getenv("DATABASE_URL", "mongodb://root:example@db:27017")
 
 app = Celery(
-    "event_consumer",
+    "data_analysis_consumer",
     broker=REDIS_URL,
     backend=REDIS_URL
 )
@@ -30,7 +29,7 @@ app.conf.update(
     enable_utc=True,
 )
 
-class IntegratedEventConsumer(bootsteps.StartStopStep):
+class DataAnalysisConsumer(bootsteps.StartStopStep):
     requires = {"celery.worker.components:Timer"}
 
     def __init__(self, worker, **kwargs) -> None:
@@ -66,14 +65,14 @@ class IntegratedEventConsumer(bootsteps.StartStopStep):
         
         client = AsyncIOMotorClient(MONGO_URI, uuidRepresentation="standard")
         db = client[os.getenv("DATABASE_NAME", "app_db")]
-        shipment_event_repo = ShipmentEventRepository(db)
+        data_analysis_repository = DataAnalysisRepository(db)
 
         while not self._stopped.is_set():
             try:
                 message = self._pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
                 
                 if message and message["type"] == "message":
-                    self._process_message(message["data"], shipment_event_repo, loop)
+                    self._process_message(message["data"], data_analysis_repository, loop)
             except Exception as e:
                 print(f"Error at: {e}")
                 if not self._stopped.is_set():
@@ -85,17 +84,17 @@ class IntegratedEventConsumer(bootsteps.StartStopStep):
     def _process_message(
         self, 
         data: str, 
-        shipment_event_repo: ShipmentEventRepository, 
+        data_analysis_repository: DataAnalysisRepository,
         loop: asyncio.AbstractEventLoop,
     ) -> None:
         try:
             payload = json.loads(data)
             print(f"Income event payload: {payload}")
-            use_case = IntegratedEventUseCase(shipment_event_repository=shipment_event_repo)
+            use_case = IncrementShipmentUseCase(data_analysis_repository=data_analysis_repository)
             result = loop.run_until_complete(use_case.execute(CreateShipmentEvent(**payload)))
             print(f"Event processed, result: {result}")
             
         except json.JSONDecodeError:
             print(f"Invalid JSON: {data}")
 
-app.steps["worker"].add(IntegratedEventConsumer)
+app.steps["worker"].add(DataAnalysisConsumer)
