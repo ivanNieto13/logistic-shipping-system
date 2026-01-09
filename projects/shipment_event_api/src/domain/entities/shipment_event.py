@@ -5,10 +5,10 @@ from ...interfaces.schemas.shipment_event import ShipmentEventType
 class ShipmentEvent:
     def __init__(
         self,
-        shipment_id: UUID | str,
-        event: ShipmentEventType,
-        origin_date: float,
-        author: str,
+        shipment_id: UUID | str | None = None,
+        event: ShipmentEventType | None = None,
+        origin_date: float | None = None,
+        author: str | None = None,
     ):
         self.shipment_id = shipment_id
         self.event = event
